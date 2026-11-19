@@ -18,11 +18,18 @@
 * Docker & Docker Compose
 
 ## 📦 Как запустить (Инструкция):
-1. Установите [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-2. Скачайте проект.
-3. В терминале выполните:
+1. Скачайте проект.
+2. В терминале выполните:
    ```bash
    docker compose up -d --build
-или
-   ```bash
-   docker push sifoldifol/schedule-check:tagname
+   
+   или
+   
+   docker run -d -p 5000:5000 --name schedule_monitor sifoldifol/schedule-check:latest
+
+## Настройте приложение
+
+Перейдите на вкладку 📧 Почта.
+Введите SMTP-сервер (например, smtp.mail.ru), вашу почту и пароль для внешних приложений.
+Введите почту получателя.
+Нажмите «Сохранить все настройки». Приложение сразу выполнит тестовую проверку и отправит первое письмо с расписанием.
