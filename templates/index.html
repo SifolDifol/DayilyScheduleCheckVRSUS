@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мониторинг расписания</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Настройки</h4>
+                    </div>
+                    <div class="card-body">
+
+                        {% if message %}
+                        <div class="alert alert-warning" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Вкладки -->
+                        <ul class="nav nav-tabs mb-3" id="settingsTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab">📅 Расписание</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="email-tab" data-bs-toggle="tab" data-bs-target="#email" type="button" role="tab">📧 Почта</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="network-tab" data-bs-toggle="tab" data-bs-target="#network" type="button" role="tab">🌐 Сеть</button>
+                            </li>
+                        </ul>
+
+                        <!-- Форма общая для всех вкладок -->
+                        <form action="/update" method="POST">
+                            <div class="tab-content" id="settingsTabsContent">
+
+                                <!-- Вкладка: Расписание -->
+                                <div class="tab-pane fade show active" id="schedule" role="tabpanel">
+                                    <div class="mb-3">
+                                        <label for="teacher" class="form-label">ФИО Преподавателя</label>
+                                        <input type="text" class="form-control" id="teacher" name="teacher" value="{{ config.teacher_name }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="period" class="form-label">Период проверки (дней)</label>
+                                        <input type="number" class="form-control" id="period" name="period" value="{{ config.period_days }}" min="1" max="60" required>
+                                        <div class="form-text">Например: 1 (только сегодня), 7 (неделя).</div>
+                                    </div>
+                                </div>
+
+                                <!-- Вкладка: Почта -->
+                                <div class="tab-pane fade" id="email" role="tabpanel">
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <label for="smtp_server" class="form-label">Почтовый сервис (SMTP)</label>
+                                            <input type="text" class="form-control" id="smtp_server" name="smtp_server"
+                                                   value="{{ config.smtp_server }}"
+                                                   placeholder="Выберите из списка или введите вручную..."
+                                                   required list="smtp_list" oninput="updatePort()">
+                                            <datalist id="smtp_list">
+                                                <option value="smtp.mail.ru">
+                                                <option value="smtp.gmail.com">
+                                                <option value="smtp.yandex.ru">
+                                                <option value="smtp.rambler.ru">
+                                            </datalist>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="smtp_port" class="form-label">Порт SMTP</label>
+                                            <input type="number" class="form-control" id="smtp_port" name="smtp_port" value="{{ config.smtp_port }}" placeholder="465" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="email_sender" class="form-label">Ваша почта (Отправитель)</label>
+                                        <input type="email" class="form-control" id="email_sender" name="email_sender" value="{{ config.email_sender }}" placeholder="your_email@mail.ru" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email_password" class="form-label">Пароль приложения</label>
+                                        <input type="password" class="form-control" id="email_password" name="email_password" value="{{ config.email_password }}" placeholder="Пароль для внешних приложений" required>
+                                        <div class="form-text text-danger">
+                                            <strong>Внимание:</strong> Не используйте основной пароль! Создайте «Пароль для внешних приложений».
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email_receiver" class="form-label">Почта получателя (Куда слать)</label>
+                                        <input type="email" class="form-control" id="email_receiver" name="email_receiver" value="{{ config.email_receiver }}" placeholder="receiver@mail.ru" required>
+                                    </div>
+                                </div>
+
+                                <!-- Вкладка: Сеть -->
+                                <div class="tab-pane fade" id="network" role="tabpanel">
+                                    <div class="alert alert-info py-2">
+                                        <small>Изменения порта вступят в силу только после перезапуска скрипта (или Docker-контейнера).</small>
+                                    </div>
+
+                                    <!-- ОБНОВЛЕННОЕ ПОЛЕ IP-АДРЕСА -->
+                                    <div class="mb-3">
+                                        <label for="web_host" class="form-label">IP-адрес (Host)</label>
+                                        <input type="text" class="form-control" id="web_host" name="web_host"
+                                               value="{{ config.web_host }}"
+                                               placeholder="Выберите из списка или введите вручную..."
+                                               required list="ip_list">
+                                        <datalist id="ip_list">
+                                            <option value="0.0.0.0">
+                                            <option value="127.0.0.1">
+                                        </datalist>
+                                        <div class="form-text">
+                                            <b>0.0.0.0</b> — доступ с любого устройства в вашей сети.<br>
+                                            <b>127.0.0.1</b> — доступ только с этого компьютера.
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="web_port" class="form-label">Порт веб-интерфейса</label>
+                                        <input type="number" class="form-control" id="web_port" name="web_port" value="{{ config.web_port }}" min="1024" max="65535" required>
+                                        <div class="form-text">По умолчанию 5000(И в docker-compose). Если порт занят, укажите другой (например, 8080).</div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Кнопка сохранения -->
+                            <hr>
+                            <button type="submit" class="btn btn-primary w-100">Сохранить все настройки</button>
+                        </form>
+
+                        <div class="text-muted small mt-4">
+                            <p class="mb-1"><strong>Статус:</strong> Мониторинг активен в фоне.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updatePort() {
+            const server = document.getElementById('smtp_server').value.toLowerCase();
+            const standardServers = ['smtp.mail.ru', 'smtp.gmail.com', 'smtp.yandex.ru', 'smtp.rambler.ru'];
+            if (standardServers.includes(server)) {
+                document.getElementById('smtp_port').value = 465;
+            }
+        }
+    </script>
+</body>
+</html>

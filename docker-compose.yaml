@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  schedule-monitor:
+    build: .
+    container_name: schedule_monitor
+    ports:
+      - "5000:5000"
+    volumes:
+      # Пробрасываем файлы наружу. Если их нет, Docker создаст их.
+      - ./config.json:/app/config.json
+      - ./last_schedule.json:/app/last_schedule.json
+    restart: unless-stopped
