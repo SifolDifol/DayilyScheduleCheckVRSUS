@@ -1,4 +1,3 @@
-import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote
@@ -21,14 +20,14 @@ app = Flask(__name__)
 # ==========================================
 
 os.makedirs("data", exist_ok=True)
-CONFIG_FILE = "config.json"
-FILE_STATE = "last_schedule.json"
+CONFIG_FILE = "data/config.json"
+FILE_STATE = "data/last_schedule.json"
 
 # Блокировка для предотвращения одновременного доступа к файлам из разных потоков
 state_lock = threading.Lock()
 
 DEFAULT_CONFIG = {
-    "teacher_name": "Алексеева Наталья Дмитриевна",
+    "teacher_name": "Чесняков Дмитрий Андреевич",
     "period_days": 7,
     "smtp_server": "smtp.mail.ru",
     "smtp_port": 465,
