@@ -23,3 +23,6 @@
 3. В терминале выполните:
    ```bash
    docker compose up -d --build
+или
+   ```bash
+   docker push sifoldifol/schedule-check:tagname
