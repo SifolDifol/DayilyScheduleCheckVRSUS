@@ -6,3 +6,4 @@ __pycache__
 config.json
 last_schedule.json
 README.md
+data/

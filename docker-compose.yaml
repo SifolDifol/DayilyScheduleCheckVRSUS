@@ -3,11 +3,10 @@ version: '3.8'
 services:
   schedule-monitor:
     build: .
+    image: sifoldifol/schedule-check:latest
     container_name: schedule_monitor
     ports:
       - "5000:5000"
     volumes:
-      # Пробрасываем файлы наружу. Если их нет, Docker создаст их.
-      - ./config.json:/app/config.json
-      - ./last_schedule.json:/app/last_schedule.json
+      - ./data:/app/data # <-- Пробрасываем ПАПКУ, а не файлы
     restart: unless-stopped

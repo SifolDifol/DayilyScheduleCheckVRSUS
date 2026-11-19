@@ -5,6 +5,7 @@ __pycache__/
 # Файлы с настройками и историей (там ваши пароли!)
 config.json
 last_schedule.json
+data/
 
 # Системные файлы
 .idea/

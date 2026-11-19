@@ -1,3 +1,4 @@
+import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import quote
@@ -18,6 +19,8 @@ app = Flask(__name__)
 # ==========================================
 # ⚙️ УПРАВЛЕНИЕ НАСТРОЙКАМИ
 # ==========================================
+
+os.makedirs("data", exist_ok=True)
 CONFIG_FILE = "config.json"
 FILE_STATE = "last_schedule.json"
 
